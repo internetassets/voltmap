@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "outputDirectory": "dist",
+  "buildCommand": "node scripts/generate-pages.js",
+  "installCommand": "npm install"
+}

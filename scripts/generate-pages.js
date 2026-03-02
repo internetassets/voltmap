@@ -245,11 +245,39 @@ async function build() {
 ${sitemapUrls.map(url => `  <url><loc>${url}</loc><changefreq>weekly</changefreq></url>`).join('\n')}
 </urlset>`;
   await fs.writeFile(path.join(DIST, 'sitemap.xml'), sitemap);
-  
+
   // robots.txt
   await fs.writeFile(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${BASE_URL}/sitemap.xml\n`);
-  
-  console.log(`\n\n✅ Generated ${totalPages} pages + sitemap.xml`);
+
+  // Copy root index.html (main directory UI)
+  const rootIndex = path.join(__dirname, '..', 'index.html');
+  if (await fs.pathExists(rootIndex)) {
+    await fs.copy(rootIndex, path.join(DIST, 'index.html'));
+    console.log('\n   Copied index.html → dist/');
+  }
+
+  // Copy admin panel
+  const adminDir = path.join(__dirname, '..', 'admin');
+  if (await fs.pathExists(adminDir)) {
+    await fs.copy(adminDir, path.join(DIST, 'admin'));
+    console.log('   Copied admin/ → dist/admin/');
+  }
+
+  // Copy CSS/JS assets
+  const srcStyles = path.join(__dirname, '..', 'src');
+  if (await fs.pathExists(srcStyles)) {
+    await fs.copy(srcStyles, path.join(DIST, 'src'));
+    console.log('   Copied src/ → dist/src/');
+  }
+
+  // Copy public assets if they exist
+  const publicDir = path.join(__dirname, '..', 'public');
+  if (await fs.pathExists(publicDir)) {
+    await fs.copy(publicDir, path.join(DIST, 'public'));
+    console.log('   Copied public/ → dist/public/');
+  }
+
+  console.log(`\n✅ Generated ${totalPages} pages + sitemap.xml`);
   console.log(`   Output: ${DIST}`);
 }
 
