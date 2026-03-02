@@ -1,0 +1,161 @@
+/* VoltMap — Carbon Fiber Theme
+   ─────────────────────────────
+   Core design tokens + component styles
+   Import via: <link rel="stylesheet" href="/src/styles/voltmap.css">
+*/
+
+:root {
+  --carbon: #0a0a0c;
+  --carbon-mid: #111114;
+  --carbon-light: #1a1a1f;
+  --carbon-border: #2a2a32;
+  --volt: #b8f400;
+  --volt-dim: #8ab800;
+  --volt-glow: rgba(184,244,0,0.15);
+  --steel: #8890a0;
+  --steel-light: #c4cad6;
+  --white: #f0f2f5;
+  --red: #ff3b3b;
+  --amber: #f5a623;
+  --blue: #4a9eff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--carbon);
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px),
+    repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── LISTING CARDS ── */
+.listing-card {
+  background: var(--carbon-light);
+  border: 1px solid var(--carbon-border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  transition: all 0.2s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.listing-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.listing-card:hover {
+  border-color: rgba(184,244,0,0.3);
+  background: #1e1e24;
+  transform: translateX(2px);
+}
+
+.listing-card:hover::before { background: var(--volt); }
+
+.listing-card.sponsored {
+  border-color: rgba(245,166,35,0.25);
+  background: rgba(245,166,35,0.04);
+}
+
+.listing-card.sponsored::before { background: var(--amber); width: 3px; }
+
+.card-biz-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: 0.02em;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.card-category {
+  font-size: 12px;
+  color: var(--steel);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 7px;
+  flex-wrap: wrap;
+}
+
+.cat-dot { width: 4px; height: 4px; background: var(--steel); border-radius: 50%; }
+
+.rating-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.rating-num { font-size: 13px; font-weight: 600; color: var(--amber); font-family: 'Rajdhani', sans-serif; }
+.stars { display: flex; gap: 1px; }
+.star { font-size: 12px; color: var(--amber); }
+.star-empty { font-size: 12px; color: var(--carbon-border); }
+.review-count { font-size: 12px; color: var(--blue); cursor: pointer; }
+.review-count:hover { text-decoration: underline; }
+
+.card-meta { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 8px; font-size: 12px; color: var(--steel-light); }
+.meta-item { display: flex; align-items: center; gap: 5px; }
+.meta-icon { color: var(--steel); font-size: 13px; }
+
+.card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.tag { padding: 3px 8px; border-radius: 4px; font-size: 11px; background: var(--carbon); color: var(--steel-light); border: 1px solid var(--carbon-border); }
+.tag.highlight { background: var(--volt-glow); color: var(--volt); border-color: rgba(184,244,0,0.2); }
+
+.card-actions { display: flex; align-items: center; gap: 8px; padding-top: 10px; border-top: 1px solid var(--carbon-border); flex-wrap: wrap; }
+
+.action-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 6px;
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  border: 1px solid var(--carbon-border);
+  background: transparent; color: var(--steel-light);
+  transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+  text-decoration: none;
+}
+
+.action-btn:hover { border-color: var(--volt); color: var(--volt); background: var(--volt-glow); }
+
+.action-btn.primary {
+  background: var(--volt); color: var(--carbon);
+  border-color: var(--volt); font-weight: 700;
+}
+
+.action-btn.primary:hover {
+  background: #caff14;
+  box-shadow: 0 2px 12px rgba(184,244,0,0.3);
+}
+
+/* ── BADGES ── */
+.open-badge { font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 4px; background: rgba(100,200,80,0.15); color: #7ddb5e; border: 1px solid rgba(100,200,80,0.2); }
+.closed-badge { font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 4px; background: rgba(255,59,59,0.12); color: var(--red); border: 1px solid rgba(255,59,59,0.2); }
+.sponsored-tag { font-size: 10px; font-family: 'Rajdhani', sans-serif; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.2); padding: 2px 7px; border-radius: 3px; }
+.new-badge { font-size: 10px; background: rgba(74,158,255,0.15); color: var(--blue); border: 1px solid rgba(74,158,255,0.2); padding: 2px 6px; border-radius: 3px; font-family: 'Rajdhani', sans-serif; letter-spacing: 0.08em; }
+.verified-icon { color: var(--blue); font-size: 13px; }
+
+/* ── BREADCRUMB ── */
+.breadcrumb { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; font-size: 12px; color: var(--steel); }
+.breadcrumb a { color: var(--steel); text-decoration: none; transition: color 0.15s; }
+.breadcrumb a:hover { color: var(--volt); }
+
+/* ── UTILITIES ── */
+.volt-text { color: var(--volt); }
+.steel-text { color: var(--steel); }

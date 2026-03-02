@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VoltMap Listing Schema",
+  "description": "Canonical schema for a single eBike shop listing",
+  "type": "object",
+  "required": ["id", "name", "address", "city", "state", "zip"],
+  "properties": {
+    "id":           { "type": "string", "description": "Unique listing ID (slug-based)" },
+    "name":         { "type": "string", "description": "Business name" },
+    "slug":         { "type": "string", "description": "URL-safe name (auto-generated)" },
+    "category":     { "type": "array", "items": { "type": "string" }, "description": "Business types" },
+    "address":      { "type": "string" },
+    "city":         { "type": "string" },
+    "state":        { "type": "string", "description": "2-letter state code" },
+    "state_name":   { "type": "string", "description": "Full state name" },
+    "zip":          { "type": "string" },
+    "phone":        { "type": "string" },
+    "website":      { "type": "string", "format": "uri" },
+    "hours": {
+      "type": "object",
+      "properties": {
+        "mon": { "type": "string" },
+        "tue": { "type": "string" },
+        "wed": { "type": "string" },
+        "thu": { "type": "string" },
+        "fri": { "type": "string" },
+        "sat": { "type": "string" },
+        "sun": { "type": "string" }
+      }
+    },
+    "rating":        { "type": "number", "minimum": 0, "maximum": 5 },
+    "review_count":  { "type": "integer", "minimum": 0 },
+    "brands":        { "type": "array", "items": { "type": "string" } },
+    "services":      { "type": "array", "items": { "type": "string" } },
+    "description":   { "type": "string" },
+    "verified":      { "type": "boolean", "default": false },
+    "sponsored":     { "type": "boolean", "default": false },
+    "featured":      { "type": "boolean", "default": false },
+    "status":        { "type": "string", "enum": ["active", "pending", "rejected", "flagged"] },
+    "tier":          { "type": "string", "enum": ["free", "basic", "featured", "sponsored"], "default": "free" },
+    "source":        { "type": "string", "enum": ["apify", "manual", "claimed"] },
+    "apify_id":      { "type": "string", "description": "Original Apify record ID for dedup" },
+    "place_id":      { "type": "string", "description": "Google Place ID if available" },
+    "last_updated":  { "type": "string", "format": "date" },
+    "created_at":    { "type": "string", "format": "date-time" }
+  }
+}

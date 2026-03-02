@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VoltMap Admin — Listing Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --carbon: #0a0a0c; --carbon-mid: #111114; --carbon-light: #1a1a1f;
+    --carbon-border: #2a2a32; --volt: #b8f400; --volt-glow: rgba(184,244,0,0.15);
+    --steel: #8890a0; --steel-light: #c4cad6; --white: #f0f2f5;
+    --red: #ff3b3b; --amber: #f5a623; --blue: #4a9eff; --green: #7ddb5e;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--carbon); color:var(--white); font-family:'DM Sans',sans-serif; font-size:14px; }
+
+  /* Admin header */
+  .admin-header {
+    background: var(--carbon-mid);
+    border-bottom: 1px solid var(--carbon-border);
+    padding: 0 24px;
+    display: flex; align-items: center; gap: 20px; height: 52px;
+  }
+  .admin-logo { font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:700; color:var(--white); }
+  .admin-logo span { color:var(--volt); }
+  .admin-badge { font-size:10px; background:rgba(255,59,59,0.15); color:var(--red); border:1px solid rgba(255,59,59,0.2); padding:2px 8px; border-radius:3px; font-family:'Rajdhani',sans-serif; letter-spacing:0.1em; text-transform:uppercase; }
+  .admin-nav { display:flex; gap:4px; margin-left:auto; }
+  .nav-tab { padding:6px 14px; border-radius:6px; font-size:13px; cursor:pointer; border:1px solid transparent; color:var(--steel); background:transparent; font-family:'DM Sans',sans-serif; transition:all 0.15s; }
+  .nav-tab:hover, .nav-tab.active { background:var(--carbon-light); border-color:var(--carbon-border); color:var(--white); }
+  .nav-tab.active { color:var(--volt); border-color:rgba(184,244,0,0.2); }
+
+  /* Layout */
+  .admin-layout { display:grid; grid-template-columns:220px 1fr; min-height:calc(100vh - 52px); }
+  .admin-sidebar { border-right:1px solid var(--carbon-border); padding:16px 0; }
+  .sidebar-item { display:flex; align-items:center; gap:10px; padding:9px 16px; cursor:pointer; font-size:13px; color:var(--steel); transition:all 0.15s; }
+  .sidebar-item:hover, .sidebar-item.active { background:var(--carbon-light); color:var(--white); }
+  .sidebar-item.active { border-right:2px solid var(--volt); color:var(--volt); }
+  .sidebar-icon { font-size:15px; }
+  .sidebar-count { margin-left:auto; font-size:11px; background:var(--carbon-border); padding:1px 7px; border-radius:10px; }
+  .sidebar-count.alert { background:rgba(255,59,59,0.2); color:var(--red); }
+
+  /* Main admin content */
+  .admin-main { padding:20px 24px; }
+
+  /* Stats row */
+  .stats-row { display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-bottom:20px; }
+  .stat-card { background:var(--carbon-light); border:1px solid var(--carbon-border); border-radius:9px; padding:14px 16px; }
+  .stat-card-num { font-family:'Rajdhani',sans-serif; font-size:28px; font-weight:700; color:var(--volt); }
+  .stat-card-label { font-size:11px; color:var(--steel); margin-top:2px; text-transform:uppercase; letter-spacing:0.08em; font-family:'Rajdhani',sans-serif; }
+
+  /* Toolbar */
+  .toolbar { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .search-input { background:var(--carbon-light); border:1px solid var(--carbon-border); border-radius:7px; padding:8px 14px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:13px; outline:none; width:280px; transition:border-color 0.2s; }
+  .search-input:focus { border-color:var(--volt); }
+  .filter-select { background:var(--carbon-light); border:1px solid var(--carbon-border); color:var(--steel-light); padding:8px 12px; border-radius:7px; font-size:12px; font-family:'DM Sans',sans-serif; outline:none; }
+  .btn { padding:7px 16px; border-radius:7px; font-size:13px; font-weight:500; cursor:pointer; border:none; font-family:'DM Sans',sans-serif; transition:all 0.15s; }
+  .btn-volt { background:var(--volt); color:var(--carbon); font-weight:700; }
+  .btn-volt:hover { background:#caff14; }
+  .btn-ghost { background:transparent; color:var(--steel-light); border:1px solid var(--carbon-border); }
+  .btn-ghost:hover { border-color:var(--volt); color:var(--volt); }
+
+  /* Table */
+  .listings-table { width:100%; border-collapse:collapse; }
+  .listings-table th { text-align:left; padding:10px 12px; font-size:11px; font-family:'Rajdhani',sans-serif; letter-spacing:0.1em; text-transform:uppercase; color:var(--steel); border-bottom:1px solid var(--carbon-border); font-weight:600; }
+  .listings-table td { padding:11px 12px; border-bottom:1px solid rgba(42,42,50,0.5); font-size:13px; vertical-align:middle; }
+  .listings-table tr:hover td { background:rgba(26,26,31,0.8); }
+
+  .status-pill { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:500; }
+  .status-active { background:rgba(125,219,94,0.12); color:var(--green); border:1px solid rgba(125,219,94,0.2); }
+  .status-pending { background:rgba(245,166,35,0.12); color:var(--amber); border:1px solid rgba(245,166,35,0.2); }
+  .status-rejected { background:rgba(255,59,59,0.12); color:var(--red); border:1px solid rgba(255,59,59,0.2); }
+  .status-flagged { background:rgba(74,158,255,0.12); color:var(--blue); border:1px solid rgba(74,158,255,0.2); }
+
+  .tier-badge { font-size:10px; padding:2px 7px; border-radius:3px; font-family:'Rajdhani',sans-serif; letter-spacing:0.08em; text-transform:uppercase; }
+  .tier-sponsored { background:rgba(245,166,35,0.15); color:var(--amber); }
+  .tier-featured { background:var(--volt-glow); color:var(--volt); }
+  .tier-basic { background:rgba(74,158,255,0.1); color:var(--blue); }
+  .tier-free { background:var(--carbon-border); color:var(--steel); }
+
+  .table-actions { display:flex; gap:5px; }
+  .tbl-btn { padding:4px 9px; font-size:11px; border-radius:5px; cursor:pointer; border:1px solid var(--carbon-border); background:transparent; color:var(--steel); font-family:'DM Sans',sans-serif; transition:all 0.12s; }
+  .tbl-btn:hover { border-color:var(--volt); color:var(--volt); }
+  .tbl-btn.danger:hover { border-color:var(--red); color:var(--red); }
+
+  /* Import box */
+  .import-box { background:var(--carbon-light); border:2px dashed var(--carbon-border); border-radius:10px; padding:32px; text-align:center; transition:border-color 0.2s; cursor:pointer; }
+  .import-box:hover { border-color:var(--volt); }
+  .import-icon { font-size:36px; margin-bottom:10px; }
+  .import-title { font-family:'Rajdhani',sans-serif; font-size:18px; font-weight:600; margin-bottom:4px; }
+  .import-desc { font-size:12px; color:var(--steel); }
+
+  .panel { display:none; }
+  .panel.active { display:block; }
+</style>
+</head>
+<body>
+
+<!-- Admin Header -->
+<div class="admin-header">
+  <div class="admin-logo">⚡ VOLT<span>MAP</span></div>
+  <div class="admin-badge">Admin</div>
+  <nav class="admin-nav">
+    <button class="nav-tab active" onclick="showPanel('listings', this)">Listings</button>
+    <button class="nav-tab" onclick="showPanel('import', this)">Import JSON</button>
+    <button class="nav-tab" onclick="showPanel('ads', this)">Ad Zones</button>
+    <button class="nav-tab" onclick="showPanel('settings', this)">Settings</button>
+    <button class="nav-tab" onclick="location.href='../'" style="margin-left:8px;">← Front End</button>
+  </nav>
+</div>
+
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-item active">
+      <span class="sidebar-icon">📋</span> All Listings
+      <span class="sidebar-count">2,847</span>
+    </div>
+    <div class="sidebar-item">
+      <span class="sidebar-icon">⏳</span> Pending Review
+      <span class="sidebar-count alert">143</span>
+    </div>
+    <div class="sidebar-item">
+      <span class="sidebar-icon">✅</span> Active
+      <span class="sidebar-count">2,591</span>
+    </div>
+    <div class="sidebar-item">
+      <span class="sidebar-icon">⭐</span> Sponsored
+      <span class="sidebar-count">38</span>
+    </div>
+    <div class="sidebar-item">
+      <span class="sidebar-icon">🚩</span> Flagged
+      <span class="sidebar-count alert">12</span>
+    </div>
+    <div class="sidebar-item">
+      <span class="sidebar-icon">❌</span> Rejected
+      <span class="sidebar-count">101</span>
+    </div>
+    <div style="height:1px; background:var(--carbon-border); margin:10px 16px;"></div>
+    <div style="padding:8px 16px; font-size:11px; font-family:'Rajdhani',sans-serif; letter-spacing:0.1em; text-transform:uppercase; color:var(--steel);">By State</div>
+    <div class="sidebar-item">🗺️ California <span class="sidebar-count">212</span></div>
+    <div class="sidebar-item">🗺️ Texas <span class="sidebar-count">148</span></div>
+    <div class="sidebar-item">🗺️ Florida <span class="sidebar-count">131</span></div>
+    <div class="sidebar-item" style="color:var(--steel); font-size:12px; padding-left:20px;">+ 47 more states</div>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+
+    <!-- PANEL: Listings -->
+    <div class="panel active" id="panel-listings">
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-card-num">2,847</div><div class="stat-card-label">Total Listings</div></div>
+        <div class="stat-card"><div class="stat-card-num" style="color:var(--amber)">143</div><div class="stat-card-label">Pending</div></div>
+        <div class="stat-card"><div class="stat-card-num" style="color:var(--amber)">38</div><div class="stat-card-label">Sponsored</div></div>
+        <div class="stat-card"><div class="stat-card-num" style="color:var(--red)">12</div><div class="stat-card-label">Flagged</div></div>
+        <div class="stat-card"><div class="stat-card-num">50</div><div class="stat-card-label">States</div></div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <input type="text" class="search-input" placeholder="Search by name, city, phone…" />
+        <select class="filter-select">
+          <option>All States</option>
+          <option>California</option>
+          <option>Texas</option>
+          <option>Florida</option>
+        </select>
+        <select class="filter-select">
+          <option>All Status</option>
+          <option>Active</option>
+          <option>Pending</option>
+          <option>Flagged</option>
+          <option>Rejected</option>
+        </select>
+        <select class="filter-select">
+          <option>All Tiers</option>
+          <option>Sponsored</option>
+          <option>Featured</option>
+          <option>Basic</option>
+          <option>Free</option>
+        </select>
+        <button class="btn btn-volt" style="margin-left:auto;">+ Add Listing</button>
+        <button class="btn btn-ghost">Export CSV</button>
+      </div>
+
+      <!-- Table -->
+      <table class="listings-table">
+        <thead>
+          <tr>
+            <th><input type="checkbox"></th>
+            <th>Business Name</th>
+            <th>City / State</th>
+            <th>Phone</th>
+            <th>Rating</th>
+            <th>Status</th>
+            <th>Tier</th>
+            <th>Source</th>
+            <th>Updated</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="checkbox"></td>
+            <td><strong>VoltRide LA</strong><br><span style="font-size:11px;color:var(--steel)">voltride-la-001</span></td>
+            <td>Los Angeles, CA</td>
+            <td>(323) 555-0192</td>
+            <td>⭐ 4.9 (312)</td>
+            <td><span class="status-pill status-active">● Active</span></td>
+            <td><span class="tier-badge tier-sponsored">Sponsored</span></td>
+            <td>Apify</td>
+            <td>2026-03-01</td>
+            <td>
+              <div class="table-actions">
+                <button class="tbl-btn">Edit</button>
+                <button class="tbl-btn">View</button>
+                <button class="tbl-btn danger">Del</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"></td>
+            <td><strong>Electric Avenue Cycles</strong><br><span style="font-size:11px;color:var(--steel)">electric-avenue-cycles-002</span></td>
+            <td>Culver City, CA</td>
+            <td>(424) 555-0847</td>
+            <td>⭐ 4.7 (184)</td>
+            <td><span class="status-pill status-active">● Active</span></td>
+            <td><span class="tier-badge tier-basic">Basic</span></td>
+            <td>Apify</td>
+            <td>2026-03-01</td>
+            <td>
+              <div class="table-actions">
+                <button class="tbl-btn">Edit</button>
+                <button class="tbl-btn">View</button>
+                <button class="tbl-btn danger">Del</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"></td>
+            <td><strong>Pacific eBikes</strong><br><span style="font-size:11px;color:var(--steel)">pacific-ebikes-004</span></td>
+            <td>Santa Monica, CA</td>
+            <td>(310) 555-0331</td>
+            <td>⭐ 4.4 (67)</td>
+            <td><span class="status-pill status-pending">◌ Pending</span></td>
+            <td><span class="tier-badge tier-free">Free</span></td>
+            <td>Apify</td>
+            <td>2026-03-01</td>
+            <td>
+              <div class="table-actions">
+                <button class="tbl-btn">Edit</button>
+                <button class="tbl-btn" style="color:var(--green);border-color:rgba(125,219,94,0.3)">Approve</button>
+                <button class="tbl-btn danger">Reject</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"></td>
+            <td><strong>Bay Volt Cycles</strong><br><span style="font-size:11px;color:var(--steel)">bay-volt-cycles-003</span></td>
+            <td>San Francisco, CA</td>
+            <td>(415) 555-0228</td>
+            <td>⭐ 4.6 (148)</td>
+            <td><span class="status-pill status-flagged">⚐ Flagged</span></td>
+            <td><span class="tier-badge tier-free">Free</span></td>
+            <td>Apify</td>
+            <td>2026-03-01</td>
+            <td>
+              <div class="table-actions">
+                <button class="tbl-btn">Edit</button>
+                <button class="tbl-btn">Review</button>
+                <button class="tbl-btn danger">Del</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px; font-size:12px; color:var(--steel);">Showing 4 of 2,847 listings · <a href="#" style="color:var(--blue)">Load more</a></div>
+    </div>
+
+    <!-- PANEL: Import -->
+    <div class="panel" id="panel-import">
+      <h2 style="font-family:'Rajdhani',sans-serif; font-size:22px; margin-bottom:6px;">Import Apify JSON</h2>
+      <p style="color:var(--steel); font-size:13px; margin-bottom:20px;">Drop raw Apify Google Maps scraper output. The importer normalizes, deduplicates, and queues listings for review.</p>
+      
+      <div class="import-box" onclick="document.getElementById('fileInput').click()">
+        <div class="import-icon">📦</div>
+        <div class="import-title">Drop your Apify JSON files here</div>
+        <div class="import-desc" style="margin-top:4px;">Supports single state files (california-raw.json) or bulk — up to 50 files at once</div>
+        <input type="file" id="fileInput" accept=".json" multiple style="display:none">
+        <button class="btn btn-volt" style="margin-top:14px;" onclick="event.stopPropagation()">Browse Files</button>
+      </div>
+
+      <div style="margin-top:20px; background:var(--carbon-light); border:1px solid var(--carbon-border); border-radius:10px; padding:16px;">
+        <div style="font-family:'Rajdhani',sans-serif; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; color:var(--steel); margin-bottom:12px;">Or run via CLI</div>
+        <code style="display:block; background:var(--carbon); padding:12px 16px; border-radius:7px; font-size:12px; color:var(--volt); line-height:2;">
+          node scripts/import-apify.js --input data/states/raw/california-raw.json --state california<br>
+          node scripts/import-apify.js --all
+        </code>
+      </div>
+    </div>
+
+    <!-- PANEL: Ads -->
+    <div class="panel" id="panel-ads">
+      <h2 style="font-family:'Rajdhani',sans-serif; font-size:22px; margin-bottom:16px;">Ad Zone Manager</h2>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px;">
+        <div style="background:var(--carbon-light); border:1px solid var(--carbon-border); border-radius:9px; padding:16px;">
+          <div style="font-family:'Rajdhani',sans-serif; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; color:var(--steel); margin-bottom:10px;">Leaderboard</div>
+          <div style="font-size:12px; color:var(--steel-light); margin-bottom:10px;">728×90 · Top of page</div>
+          <select class="filter-select" style="width:100%; margin-bottom:8px;"><option>Google AdSense</option><option>Direct / HTML</option><option>Off</option></select>
+          <textarea style="width:100%; background:var(--carbon); border:1px solid var(--carbon-border); border-radius:6px; padding:8px; color:var(--steel-light); font-size:11px; height:70px; resize:none; font-family:monospace;" placeholder="Paste ad tag HTML here…"></textarea>
+          <button class="btn btn-ghost" style="margin-top:6px; width:100%; font-size:12px;">Save Zone</button>
+        </div>
+        <div style="background:var(--carbon-light); border:1px solid var(--carbon-border); border-radius:9px; padding:16px;">
+          <div style="font-family:'Rajdhani',sans-serif; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; color:var(--steel); margin-bottom:10px;">Right Rail #1</div>
+          <div style="font-size:12px; color:var(--steel-light); margin-bottom:10px;">300×250 · Medium Rectangle</div>
+          <select class="filter-select" style="width:100%; margin-bottom:8px;"><option>Google AdSense</option><option>Amazon Associates</option><option>Direct / HTML</option><option>Off</option></select>
+          <textarea style="width:100%; background:var(--carbon); border:1px solid var(--carbon-border); border-radius:6px; padding:8px; color:var(--steel-light); font-size:11px; height:70px; resize:none; font-family:monospace;" placeholder="Paste ad tag HTML here…"></textarea>
+          <button class="btn btn-ghost" style="margin-top:6px; width:100%; font-size:12px;">Save Zone</button>
+        </div>
+        <div style="background:var(--carbon-light); border:1px solid rgba(184,244,0,0.2); border-radius:9px; padding:16px;">
+          <div style="font-family:'Rajdhani',sans-serif; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; color:var(--volt); margin-bottom:10px;">Sponsor Spotlight</div>
+          <div style="font-size:12px; color:var(--steel-light); margin-bottom:10px;">Custom · Right rail</div>
+          <textarea style="width:100%; background:var(--carbon); border:1px solid var(--carbon-border); border-radius:6px; padding:8px; color:var(--steel-light); font-size:11px; height:100px; resize:none; font-family:monospace;" placeholder="Custom sponsor HTML / logo + link…"></textarea>
+          <button class="btn btn-volt" style="margin-top:6px; width:100%; font-size:12px;">Save Sponsor</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: Settings -->
+    <div class="panel" id="panel-settings">
+      <h2 style="font-family:'Rajdhani',sans-serif; font-size:22px; margin-bottom:16px;">Site Settings</h2>
+      <div style="max-width:500px; display:flex; flex-direction:column; gap:14px;">
+        <div>
+          <label style="display:block; font-size:11px; font-family:'Rajdhani',sans-serif; letter-spacing:0.08em; text-transform:uppercase; color:var(--steel); margin-bottom:6px;">Site Name</label>
+          <input type="text" class="search-input" style="width:100%;" value="VoltMap">
+        </div>
+        <div>
+          <label style="display:block; font-size:11px; font-family:'Rajdhani',sans-serif; letter-spacing:0.08em; text-transform:uppercase; color:var(--steel); margin-bottom:6px;">Base URL</label>
+          <input type="text" class="search-input" style="width:100%;" value="https://voltmap.com">
+        </div>
+        <div>
+          <label style="display:block; font-size:11px; font-family:'Rajdhani',sans-serif; letter-spacing:0.08em; text-transform:uppercase; color:var(--steel); margin-bottom:6px;">Google AdSense Publisher ID</label>
+          <input type="text" class="search-input" style="width:100%;" placeholder="ca-pub-XXXXXXXXXXXXXXXX">
+        </div>
+        <div>
+          <label style="display:block; font-size:11px; font-family:'Rajdhani',sans-serif; letter-spacing:0.08em; text-transform:uppercase; color:var(--steel); margin-bottom:6px;">Amazon Associates Tag</label>
+          <input type="text" class="search-input" style="width:100%;" placeholder="voltmap-20">
+        </div>
+        <button class="btn btn-volt" style="align-self:flex-start;">Save Settings</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function showPanel(name, tab) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  tab.classList.add('active');
+}
+</script>
+</body>
+</html>

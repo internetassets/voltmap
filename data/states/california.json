@@ -1,0 +1,125 @@
+{
+  "state": "California",
+  "state_slug": "california",
+  "state_code": "CA",
+  "total": 3,
+  "last_updated": "2026-03-01",
+  "cities": {
+    "los-angeles": {
+      "name": "Los Angeles",
+      "slug": "los-angeles",
+      "total": 2,
+      "listings": [
+        {
+          "id": "voltride-la-001",
+          "name": "VoltRide LA",
+          "slug": "voltride-la",
+          "category": ["eBike Retailer", "Service Center"],
+          "address": "2847 W Sunset Blvd",
+          "city": "Los Angeles",
+          "state": "CA",
+          "state_name": "California",
+          "zip": "90026",
+          "phone": "(323) 555-0192",
+          "website": "https://voltride.la",
+          "hours": {
+            "mon": "10:00-19:00",
+            "tue": "10:00-19:00",
+            "wed": "10:00-19:00",
+            "thu": "10:00-19:00",
+            "fri": "10:00-19:00",
+            "sat": "10:00-19:00",
+            "sun": "11:00-17:00"
+          },
+          "rating": 4.9,
+          "review_count": 312,
+          "brands": ["Rad Power", "Aventon", "Trek"],
+          "services": ["Test Rides", "Repairs", "Financing"],
+          "verified": true,
+          "sponsored": true,
+          "featured": true,
+          "status": "active",
+          "tier": "sponsored",
+          "source": "apify",
+          "apify_id": "apify_abc001",
+          "last_updated": "2026-03-01"
+        },
+        {
+          "id": "electric-avenue-cycles-002",
+          "name": "Electric Avenue Cycles",
+          "slug": "electric-avenue-cycles",
+          "category": ["eBike Shop", "DIY Kit Specialist"],
+          "address": "9124 Venice Blvd",
+          "city": "Culver City",
+          "state": "CA",
+          "state_name": "California",
+          "zip": "90232",
+          "phone": "(424) 555-0847",
+          "website": "https://electricavenuecycles.com",
+          "hours": {
+            "mon": "09:00-18:00",
+            "tue": "09:00-18:00",
+            "wed": "09:00-18:00",
+            "thu": "09:00-18:00",
+            "fri": "09:00-18:00",
+            "sat": "10:00-17:00",
+            "sun": null
+          },
+          "rating": 4.7,
+          "review_count": 184,
+          "brands": ["Bafang", "Giant"],
+          "services": ["DIY Conversion Kits", "Custom Builds", "Rental"],
+          "verified": true,
+          "sponsored": false,
+          "featured": false,
+          "status": "active",
+          "tier": "basic",
+          "source": "apify",
+          "apify_id": "apify_abc002",
+          "last_updated": "2026-03-01"
+        }
+      ]
+    },
+    "san-francisco": {
+      "name": "San Francisco",
+      "slug": "san-francisco",
+      "total": 1,
+      "listings": [
+        {
+          "id": "bay-volt-cycles-003",
+          "name": "Bay Volt Cycles",
+          "slug": "bay-volt-cycles",
+          "category": ["eBike Retailer", "Repair"],
+          "address": "2211 Mission St",
+          "city": "San Francisco",
+          "state": "CA",
+          "state_name": "California",
+          "zip": "94110",
+          "phone": "(415) 555-0228",
+          "website": "https://bayvoltcycles.com",
+          "hours": {
+            "mon": "09:00-18:00",
+            "tue": "09:00-18:00",
+            "wed": "09:00-18:00",
+            "thu": "09:00-18:00",
+            "fri": "09:00-18:00",
+            "sat": "10:00-17:00",
+            "sun": "11:00-16:00"
+          },
+          "rating": 4.6,
+          "review_count": 148,
+          "brands": ["Aventon"],
+          "services": ["Commuter Setup", "Cargo eBikes", "Hill Assist Setup"],
+          "verified": true,
+          "sponsored": false,
+          "featured": false,
+          "status": "active",
+          "tier": "free",
+          "source": "apify",
+          "apify_id": "apify_abc003",
+          "last_updated": "2026-03-01"
+        }
+      ]
+    }
+  }
+}
