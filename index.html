@@ -232,6 +232,12 @@
       </div>
     </div>
     <div class="sb-sec">
+      <div class="sb-lbl">County</div>
+      <div class="chips" id="countyChips">
+        <button class="chip active" data-county="all">All Counties</button>
+      </div>
+    </div>
+    <div class="sb-sec">
       <div class="sb-lbl">Min Rating</div>
       <div class="chips" id="ratingChips">
         <button class="chip active" data-rating="0">All</button>
@@ -305,6 +311,7 @@ let DATA = null;
 let allListings = [];
 let activeCitySlug = 'all';
 let activeCat = 'all';
+let activeCounty = 'all';
 let activeRating = 0;
 let searchQ = '';
 
@@ -337,13 +344,39 @@ async function loadData() {
 
     buildCityTabs();
     buildCityChipsLeft();
+    buildCountyChips();
     applyAndRender();
   } catch(e) {
     document.getElementById('feed').innerHTML = `<div class="empty">⚠️ Could not load listings.<br><small style="color:var(--steel)">${e.message}</small></div>`;
   }
 }
 
-// ── CITY TABS (top 13)
+// ── COUNTY CHIPS
+function buildCountyChips() {
+  const counties = Object.entries(DATA.counties)
+    .sort((a,b) => b[1].total - a[1].total);
+  let h = `<button class="chip active" data-county="all">All Counties</button>`;
+  for (const [slug, county] of counties) {
+    if (county.name === 'Unknown') continue;
+    h += `<button class="chip" data-county="${slug}">${county.name} <span style="opacity:0.45;font-size:10px">${county.total}</span></button>`;
+  }
+  document.getElementById('countyChips').innerHTML = h;
+}
+
+document.getElementById('countyChips').addEventListener('click', e=>{
+  const chip = e.target.closest('[data-county]');
+  if(!chip) return;
+  document.querySelectorAll('#countyChips .chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+  activeCounty = chip.dataset.county;
+  // reset city when county changes
+  activeCitySlug = 'all';
+  document.querySelectorAll('.c-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('.c-tab')?.classList.add('active');
+  applyAndRender();
+});
+
+
 function buildCityTabs() {
   const top = Object.entries(DATA.cities).slice(0,13);
   let h = `<button class="c-tab active" onclick="setCity('all',this)">All Cities</button>`;
@@ -399,6 +432,7 @@ function applyAndRender() {
   let list = allListings;
 
   if (activeCitySlug !== 'all') list = list.filter(l=>l._cs===activeCitySlug);
+  if (activeCounty !== 'all') list = list.filter(l=>l.county_slug===activeCounty);
   if (activeCat !== 'all') list = list.filter(l=>(l.category||[]).some(c=>c.toLowerCase().includes(activeCat)));
   if (activeRating > 0) list = list.filter(l=>(l.rating||0)>=activeRating);
   if (searchQ) list = list.filter(l=>
@@ -415,9 +449,11 @@ function applyAndRender() {
   else if (sort==='reviews') list.sort((a,b)=>(b.review_count||0)-(a.review_count||0));
   else list.sort((a,b)=>a.name.localeCompare(b.name));
 
-  const cityLabel = activeCitySlug==='all' ? 'California' : (DATA.cities[activeCitySlug]?.name||'California');
+  let areaLabel = 'California';
+  if (activeCitySlug !== 'all') areaLabel = DATA.cities[activeCitySlug]?.name || 'California';
+  else if (activeCounty !== 'all') areaLabel = (DATA.counties[activeCounty]?.name || '') + ' County';
   document.getElementById('resultsTitle').innerHTML =
-    `<em>${list.length.toLocaleString()}</em> eBike Shops in ${cityLabel}`;
+    `<em>${list.length.toLocaleString()}</em> eBike Shops in ${areaLabel}`;
 
   renderFeed(list);
 }
@@ -473,9 +509,10 @@ function renderCard(l) {
                 st==='closed'?'<span class="badge-closed">Closed</span>':'';
 
   const cats = (l.category||[]).filter(Boolean);
+  const countyStr = l.county && l.county !== 'Unknown' ? ` <span class="dot"></span> ${esc(l.county)} Co.` : '';
   const catStr = cats.length
-    ? cats.map(c=>esc(c)).join(' <span class="dot"></span> ') + ` <span class="dot"></span> ${esc(l.city)}, CA`
-    : `${esc(l.city)}, CA`;
+    ? cats.map(c=>esc(c)).join(' <span class="dot"></span> ') + ` <span class="dot"></span> ${esc(l.city)}, CA${countyStr}`
+    : `${esc(l.city)}, CA${countyStr}`;
 
   const ratingH = l.rating
     ? `<div class="rating-row">
