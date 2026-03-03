@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claim Your Listing — VoltMap</title>
+<meta name="description" content="Claim your eBike shop listing on VoltMap. Free to claim — add your logo, update your info, and reach more riders.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --carbon:#0a0a0c; --carbon-mid:#111114; --carbon-light:#1a1a1f;
+  --carbon-border:#2a2a32; --volt:#b8f400; --volt-glow:rgba(184,244,0,0.15);
+  --volt-dim:#8ab800; --steel:#8890a0; --steel-light:#c4cad6; --white:#f0f2f5;
+  --red:#ff3b3b; --amber:#f5a623; --blue:#4a9eff; --green:#7ddb5e;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--carbon);color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;min-height:100vh;display:flex;flex-direction:column;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:repeating-linear-gradient(45deg,transparent,transparent 2px,rgba(255,255,255,0.012) 2px,rgba(255,255,255,0.012) 4px),
+  repeating-linear-gradient(-45deg,transparent,transparent 2px,rgba(255,255,255,0.008) 2px,rgba(255,255,255,0.008) 4px);}
+
+/* HEADER */
+header{background:rgba(10,10,12,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--carbon-border);padding:0 24px;position:relative;z-index:10;}
+.hdr-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;height:56px;gap:16px;}
+.logo{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--white);text-decoration:none;display:flex;align-items:center;gap:8px;}
+.logo-icon{width:28px;height:28px;background:var(--volt);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.logo span{color:var(--volt);}
+.hdr-back{margin-left:auto;font-size:13px;color:var(--steel);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color 0.15s;}
+.hdr-back:hover{color:var(--volt);}
+
+/* MAIN */
+main{flex:1;position:relative;z-index:1;padding:40px 24px 60px;}
+.wrap{max-width:580px;margin:0 auto;}
+
+/* PROGRESS */
+.progress{display:flex;align-items:center;margin-bottom:36px;}
+.step{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--steel);}
+.step-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--carbon-border);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:'Rajdhani',sans-serif;font-weight:700;flex-shrink:0;transition:all 0.3s;}
+.step.done .step-dot{background:var(--green);border-color:var(--green);color:var(--carbon);}
+.step.active .step-dot{background:var(--volt);border-color:var(--volt);color:var(--carbon);}
+.step.active{color:var(--white);}
+.step-label{white-space:nowrap;}
+.step-line{flex:1;height:1px;background:var(--carbon-border);margin:0 10px;transition:background 0.3s;}
+.step-line.done{background:var(--green);}
+
+/* LISTING PREVIEW CARD */
+.listing-preview{background:var(--carbon-light);border:1px solid var(--carbon-border);border-radius:10px;padding:16px 18px;margin-bottom:24px;display:flex;align-items:center;gap:14px;}
+.lp-icon{width:48px;height:48px;background:var(--carbon-border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.lp-name{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;color:var(--white);margin-bottom:2px;}
+.lp-meta{font-size:12px;color:var(--steel);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.lp-dot{width:3px;height:3px;background:var(--steel);border-radius:50%;}
+.lp-rating{color:var(--amber);}
+.lp-tier{font-size:10px;padding:1px 6px;border-radius:3px;background:var(--carbon-border);color:var(--steel);font-family:'Rajdhani',sans-serif;letter-spacing:0.06em;text-transform:uppercase;}
+.lp-claimed{font-size:10px;padding:1px 6px;border-radius:3px;background:rgba(125,219,94,0.12);color:var(--green);border:1px solid rgba(125,219,94,0.2);font-family:'Rajdhani',sans-serif;letter-spacing:0.06em;text-transform:uppercase;}
+
+/* PANELS */
+.pnl{display:none;}
+.pnl.active{display:block;animation:fadeIn 0.25s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* HEADING */
+.panel-title{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;margin-bottom:6px;line-height:1.2;}
+.panel-title span{color:var(--volt);}
+.panel-sub{font-size:14px;color:var(--steel);margin-bottom:28px;line-height:1.6;}
+
+/* FORM */
+.f-row{margin-bottom:18px;}
+.f-lbl{display:block;font-size:11px;font-family:'Rajdhani',sans-serif;letter-spacing:0.1em;text-transform:uppercase;color:var(--steel);margin-bottom:6px;}
+.f-inp{width:100%;background:var(--carbon-light);border:1px solid var(--carbon-border);border-radius:8px;padding:11px 14px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:all 0.2s;}
+.f-inp:focus{border-color:var(--volt);box-shadow:0 0 0 3px var(--volt-glow);}
+.f-inp::placeholder{color:var(--steel);}
+.f-inp.error{border-color:var(--red);}
+.f-hint{font-size:12px;color:var(--steel);margin-top:5px;}
+.f-hint.err{color:var(--red);}
+
+/* CODE INPUT */
+.code-wrap{display:flex;gap:10px;justify-content:center;margin:20px 0;}
+.code-digit{width:52px;height:62px;background:var(--carbon-light);border:2px solid var(--carbon-border);border-radius:10px;font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:var(--volt);text-align:center;outline:none;transition:all 0.2s;caret-color:var(--volt);}
+.code-digit:focus{border-color:var(--volt);box-shadow:0 0 0 3px var(--volt-glow);}
+.code-digit.filled{border-color:var(--volt);background:rgba(184,244,0,0.05);}
+
+/* BUTTONS */
+.btn{width:100%;padding:13px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:none;transition:all 0.18s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-volt{background:var(--volt);color:var(--carbon);}
+.btn-volt:hover{background:#caff14;transform:translateY(-1px);box-shadow:0 6px 24px rgba(184,244,0,0.28);}
+.btn-volt:active{transform:translateY(0);}
+.btn-volt:disabled{background:var(--carbon-border);color:var(--steel);cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-ghost{background:transparent;color:var(--steel-light);border:1px solid var(--carbon-border);}
+.btn-ghost:hover{border-color:var(--volt);color:var(--volt);}
+.btn-sm{width:auto;padding:8px 18px;font-size:13px;font-weight:500;border-radius:7px;}
+
+/* RESEND */
+.resend-row{text-align:center;margin-top:14px;font-size:13px;color:var(--steel);}
+.resend-link{color:var(--blue);cursor:pointer;text-decoration:underline;}
+.resend-link:hover{color:var(--volt);}
+.countdown{color:var(--steel);}
+
+/* NOTICE */
+.notice{padding:12px 16px;border-radius:8px;font-size:13px;display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;line-height:1.6;}
+.notice-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.notice-info{background:rgba(74,158,255,0.1);border:1px solid rgba(74,158,255,0.18);color:var(--steel-light);}
+.notice-warn{background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.2);color:var(--amber);}
+.notice-success{background:rgba(125,219,94,0.1);border:1px solid rgba(125,219,94,0.18);color:var(--steel-light);}
+
+/* WHAT YOU GET */
+.perks{display:flex;flex-direction:column;gap:10px;margin:20px 0;}
+.perk{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:var(--carbon-light);border:1px solid var(--carbon-border);border-radius:8px;}
+.perk-icon{font-size:18px;flex-shrink:0;width:28px;text-align:center;}
+.perk-name{font-size:13px;font-weight:500;color:var(--white);margin-bottom:1px;}
+.perk-desc{font-size:12px;color:var(--steel);}
+
+/* TIER TEASER */
+.tier-teaser{background:linear-gradient(135deg,rgba(184,244,0,0.06),var(--carbon-light));border:1px solid rgba(184,244,0,0.18);border-radius:10px;padding:18px;margin-top:24px;}
+.tt-header{font-family:'Rajdhani',sans-serif;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:var(--volt);margin-bottom:12px;}
+.tt-tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.tt-tier{background:var(--carbon);border:1px solid var(--carbon-border);border-radius:7px;padding:10px 12px;text-align:center;}
+.tt-tier-name{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;margin-bottom:2px;}
+.tt-tier-price{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;color:var(--volt);}
+.tt-tier-price small{font-size:11px;color:var(--steel);font-family:'DM Sans',sans-serif;font-weight:400;}
+.tt-tier-desc{font-size:11px;color:var(--steel);margin-top:4px;line-height:1.5;}
+.tt-skip{text-align:center;margin-top:12px;font-size:12px;color:var(--steel);}
+.tt-skip a{color:var(--steel);text-decoration:underline;cursor:pointer;}
+.tt-skip a:hover{color:var(--volt);}
+
+/* SUCCESS */
+.success-icon{font-size:52px;text-align:center;margin-bottom:14px;}
+.success-title{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;text-align:center;margin-bottom:6px;}
+.success-title span{color:var(--volt);}
+.success-sub{font-size:14px;color:var(--steel);text-align:center;margin-bottom:28px;line-height:1.6;}
+.success-actions{display:flex;flex-direction:column;gap:10px;}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--carbon-border);margin:24px 0;}
+.divider-text{text-align:center;position:relative;margin:20px 0;}
+.divider-text::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:var(--carbon-border);}
+.divider-text span{background:var(--carbon);padding:0 12px;color:var(--steel);font-size:12px;position:relative;}
+
+/* SPINNER */
+.spinner{width:20px;height:20px;border:2px solid rgba(10,10,12,0.3);border-top-color:var(--carbon);border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* FOOTER */
+footer{position:relative;z-index:1;border-top:1px solid var(--carbon-border);padding:16px 24px;text-align:center;font-size:12px;color:var(--steel);}
+footer a{color:var(--steel);text-decoration:none;}
+footer a:hover{color:var(--volt);}
+
+@media(max-width:480px){
+  .tt-tiers{grid-template-columns:1fr;}
+  .code-digit{width:42px;height:52px;font-size:22px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-inner">
+    <a href="/" class="logo"><div class="logo-icon">⚡</div>VOLT<span>MAP</span></a>
+    <a href="/" class="hdr-back">← Back to directory</a>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <!-- PROGRESS BAR -->
+  <div class="progress" id="progressBar">
+    <div class="step active" id="step1"><div class="step-dot">1</div><span class="step-label">Verify</span></div>
+    <div class="step-line" id="line1"></div>
+    <div class="step" id="step2"><div class="step-dot">2</div><span class="step-label">Confirm</span></div>
+    <div class="step-line" id="line2"></div>
+    <div class="step" id="step3"><div class="step-dot">3</div><span class="step-label">Done</span></div>
+  </div>
+
+  <!-- LISTING PREVIEW — always visible -->
+  <div class="listing-preview" id="listingPreview">
+    <div class="lp-icon">🚲</div>
+    <div style="flex:1;min-width:0;">
+      <div class="lp-name" id="previewName">Loading listing…</div>
+      <div class="lp-meta">
+        <span id="previewCity">—</span>
+        <span class="lp-dot"></span>
+        <span class="lp-rating" id="previewRating"></span>
+        <span class="lp-dot"></span>
+        <span class="lp-tier" id="previewTier">Free</span>
+        <span class="lp-claimed" id="previewClaimed" style="display:none">✓ Claimed</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 1: VERIFY IDENTITY ── -->
+  <div class="pnl active" id="pnl-verify">
+    <div class="panel-title">Is this <span>your shop?</span></div>
+    <div class="panel-sub">Claiming is free. We'll send a quick verification code to confirm you're the owner — no account needed.</div>
+
+    <div class="notice notice-info">
+      <span class="notice-icon">ℹ️</span>
+      <span>We verify using the <strong>email or phone number on your listing</strong>. If yours has changed, you'll have the option to update it after claiming.</span>
+    </div>
+
+    <div class="f-row">
+      <label class="f-lbl">Your Email</label>
+      <input type="email" class="f-inp" id="claimEmail" placeholder="you@yourbikeshop.com" oninput="validateEmail(this)" autocomplete="email">
+      <div class="f-hint" id="emailHint">We'll send your 6-digit verification code here.</div>
+    </div>
+
+    <div class="divider-text"><span>and / or</span></div>
+
+    <div class="f-row">
+      <label class="f-lbl">Business Phone</label>
+      <input type="tel" class="f-inp" id="claimPhone" placeholder="(555) 555-5555" oninput="formatPhone(this)" autocomplete="tel">
+      <div class="f-hint">Optional — helps us confirm your identity faster.</div>
+    </div>
+
+    <div class="perks">
+      <div class="perk"><div class="perk-icon">✏️</div><div><div class="perk-name">Edit your listing</div><div class="perk-desc">Update name, description, hours, phone and email anytime.</div></div></div>
+      <div class="perk"><div class="perk-icon">🖼️</div><div><div class="perk-name">Add your logo</div><div class="perk-desc">Upload a photo or logo — appears on your listing card.</div></div></div>
+      <div class="perk"><div class="perk-icon">📍</div><div><div class="perk-name">Stand out in the directory</div><div class="perk-desc">Claimed listings rank higher and display a verified badge.</div></div></div>
+    </div>
+
+    <button class="btn btn-volt" id="sendCodeBtn" onclick="sendCode()">Send Verification Code →</button>
+    <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--steel);">
+      By claiming you agree to our <a href="#" style="color:var(--steel);text-decoration:underline;">Terms of Service</a>.
+      Claiming is always free.
+    </div>
+  </div>
+
+  <!-- ── STEP 2: ENTER CODE ── -->
+  <div class="pnl" id="pnl-code">
+    <div class="panel-title">Check your <span>email</span></div>
+    <div class="panel-sub" id="codeSentTo">We sent a 6-digit code to your email. Enter it below to verify ownership.</div>
+
+    <div class="code-wrap" id="codeWrap">
+      <input type="text" class="code-digit" maxlength="1" id="d0" oninput="digitInput(this,0)" onkeydown="digitKey(event,0)" inputmode="numeric">
+      <input type="text" class="code-digit" maxlength="1" id="d1" oninput="digitInput(this,1)" onkeydown="digitKey(event,1)" inputmode="numeric">
+      <input type="text" class="code-digit" maxlength="1" id="d2" oninput="digitInput(this,2)" onkeydown="digitKey(event,2)" inputmode="numeric">
+      <input type="text" class="code-digit" maxlength="1" id="d3" oninput="digitInput(this,3)" onkeydown="digitKey(event,3)" inputmode="numeric">
+      <input type="text" class="code-digit" maxlength="1" id="d4" oninput="digitInput(this,4)" onkeydown="digitKey(event,4)" inputmode="numeric">
+      <input type="text" class="code-digit" maxlength="1" id="d5" oninput="digitInput(this,5)" onkeydown="digitKey(event,5)" inputmode="numeric">
+    </div>
+
+    <div id="codeError" class="f-hint err" style="text-align:center;display:none;margin-bottom:12px;">
+      ❌ That code doesn't match. Please try again.
+    </div>
+
+    <button class="btn btn-volt" id="verifyBtn" onclick="verifyCode()" disabled>Verify Code →</button>
+
+    <div class="resend-row">
+      Didn't get it? <span class="resend-link" id="resendLink" onclick="resendCode()" style="display:none">Resend code</span>
+      <span class="countdown" id="countdown">Resend in <strong id="countdownNum">30</strong>s</span>
+    </div>
+
+    <div style="text-align:center;margin-top:16px;">
+      <button class="btn btn-ghost btn-sm" onclick="goBack()">← Use different email</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: SUCCESS + UPGRADE OFFER ── -->
+  <div class="pnl" id="pnl-success">
+    <div class="success-icon">⚡</div>
+    <div class="success-title">Listing <span>Claimed!</span></div>
+    <div class="success-sub" id="successBizName">You're now the verified owner of this listing. Your basic info is live — let's make it work harder for you.</div>
+
+    <div class="notice notice-success">
+      <span class="notice-icon">✅</span>
+      <span>Your listing is now <strong>claimed and verified</strong>. You can edit your info, add a logo, and manage your listing from the owner dashboard.</span>
+    </div>
+
+    <div class="tier-teaser">
+      <div class="tt-header">⚡ Want more customers? Upgrade your listing</div>
+      <div class="tt-tiers">
+        <div class="tt-tier" style="cursor:pointer" onclick="goUpgrade('basic')">
+          <div class="tt-tier-name" style="color:var(--blue)">Basic</div>
+          <div class="tt-tier-price">$29 <small>/mo</small></div>
+          <div class="tt-tier-desc">Logo + description + text ad on city page</div>
+          <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px;font-size:11px;border-color:var(--blue);color:var(--blue)">Select</button>
+        </div>
+        <div class="tt-tier" style="cursor:pointer;border-color:var(--volt)" onclick="goUpgrade('featured')">
+          <div class="tt-tier-name" style="color:var(--volt)">Featured ⚡</div>
+          <div class="tt-tier-price">$79 <small>/mo</small></div>
+          <div class="tt-tier-desc">Pinned top of city + sidebar ad</div>
+          <button class="btn btn-volt btn-sm" style="width:100%;margin-top:8px;font-size:11px;">Select</button>
+        </div>
+        <div class="tt-tier" style="cursor:pointer" onclick="goUpgrade('county')">
+          <div class="tt-tier-name" style="color:var(--amber)">County 🏆</div>
+          <div class="tt-tier-price">$299 <small>/mo</small></div>
+          <div class="tt-tier-desc">Logo on all county pages — exclusive</div>
+          <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px;font-size:11px;border-color:var(--amber);color:var(--amber)">Select</button>
+        </div>
+      </div>
+      <div class="tt-skip">Not ready yet — <a onclick="goToDashboard()">go to my dashboard →</a></div>
+    </div>
+
+  </div>
+
+</div>
+</main>
+
+<footer>
+  <a href="/">VoltMap</a> · <a href="/admin/">Admin</a> · <a href="#">Terms</a> · <a href="#">Privacy</a>
+  <br style="margin-top:4px">Claiming your listing is always free.
+</footer>
+
+<script>
+// ── URL PARAMS — read ?slug= or ?id= to pre-fill listing
+const params = new URLSearchParams(location.search);
+const listingSlug = params.get('slug') || params.get('id') || '';
+
+// ── DEMO LISTING DATA (in production: fetch from data/states/california.json)
+const DEMO_LISTINGS = {
+  'cal-coast-adventures-a1b2c3': {
+    name: 'Cal Coast Adventures', city: 'Santa Barbara, CA',
+    rating: '5.0 ⭐ (1,466)', tier: 'Free', phone: '(805) 628-2444',
+    county: 'Santa Barbara'
+  },
+  'the-new-wheel-electric-bikes-g7h8i9': {
+    name: 'The New Wheel Electric Bikes', city: 'Larkspur, CA',
+    rating: '4.9 ⭐ (96)', tier: 'Basic', phone: '(415) 524-7362',
+    county: 'Marin'
+  },
+  'default': {
+    name: 'Your eBike Shop', city: 'California',
+    rating: '—', tier: 'Free', phone: '', county: ''
+  }
+};
+
+const listing = DEMO_LISTINGS[listingSlug] || DEMO_LISTINGS['default'];
+
+// ── POPULATE PREVIEW
+document.getElementById('previewName').textContent = listing.name;
+document.getElementById('previewCity').textContent = listing.city;
+document.getElementById('previewRating').textContent = listing.rating;
+document.getElementById('previewTier').textContent = listing.tier;
+document.title = `Claim ${listing.name} — VoltMap`;
+
+// ── STATE
+let verifiedEmail = '';
+let codeValue = '';
+let countdownTimer = null;
+
+// ── EMAIL VALIDATION
+function validateEmail(inp) {
+  const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value);
+  inp.classList.toggle('error', inp.value.length > 4 && !ok);
+  document.getElementById('emailHint').className = 'f-hint' + (inp.value.length > 4 && !ok ? ' err' : '');
+  document.getElementById('emailHint').textContent = inp.value.length > 4 && !ok
+    ? 'Please enter a valid email address.'
+    : "We'll send your 6-digit verification code here.";
+}
+
+// ── PHONE FORMAT
+function formatPhone(inp) {
+  let v = inp.value.replace(/\D/g,'');
+  if (v.length >= 6) v = '(' + v.slice(0,3) + ') ' + v.slice(3,6) + '-' + v.slice(6,10);
+  else if (v.length >= 3) v = '(' + v.slice(0,3) + ') ' + v.slice(3);
+  inp.value = v;
+}
+
+// ── SEND CODE
+function sendCode() {
+  const email = document.getElementById('claimEmail').value.trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.getElementById('claimEmail').classList.add('error');
+    document.getElementById('emailHint').className = 'f-hint err';
+    document.getElementById('emailHint').textContent = 'Please enter a valid email address.';
+    return;
+  }
+  verifiedEmail = email;
+
+  // Animate button
+  const btn = document.getElementById('sendCodeBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Sending…';
+
+  // Simulate sending (production: POST /api/claim/send-code)
+  setTimeout(() => {
+    goStep(2);
+    document.getElementById('codeSentTo').textContent =
+      `We sent a 6-digit code to ${email}. Enter it below to verify ownership.`;
+    startCountdown();
+    document.getElementById('d0').focus();
+    btn.disabled = false;
+    btn.innerHTML = 'Send Verification Code →';
+  }, 1200);
+}
+
+// ── DIGIT INPUT HANDLING
+function digitInput(inp, idx) {
+  const v = inp.value.replace(/\D/g,'');
+  inp.value = v;
+  if (v) {
+    inp.classList.add('filled');
+    if (idx < 5) document.getElementById('d'+(idx+1)).focus();
+  } else {
+    inp.classList.remove('filled');
+  }
+  checkCodeComplete();
+}
+
+function digitKey(e, idx) {
+  if (e.key === 'Backspace' && !document.getElementById('d'+idx).value && idx > 0) {
+    document.getElementById('d'+(idx-1)).focus();
+  }
+  // Handle paste
+  if (e.key === 'v' && (e.ctrlKey || e.metaKey)) return;
+}
+
+// Handle paste on any digit
+document.getElementById('codeWrap').addEventListener('paste', e => {
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
+  for (let i = 0; i < 6; i++) {
+    const d = document.getElementById('d'+i);
+    d.value = text[i] || '';
+    d.classList.toggle('filled', !!text[i]);
+  }
+  checkCodeComplete();
+  if (text.length === 6) document.getElementById('d5').focus();
+});
+
+function checkCodeComplete() {
+  const code = [0,1,2,3,4,5].map(i => document.getElementById('d'+i).value).join('');
+  codeValue = code;
+  document.getElementById('verifyBtn').disabled = code.length < 6;
+  document.getElementById('codeError').style.display = 'none';
+}
+
+// ── VERIFY CODE
+function verifyCode() {
+  const btn = document.getElementById('verifyBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Verifying…';
+
+  // Simulate API check (production: POST /api/claim/verify)
+  // Demo: any 6-digit code works, or use 123456 as the "correct" one
+  setTimeout(() => {
+    if (codeValue === '000000') {
+      // Wrong code demo
+      document.getElementById('codeError').style.display = 'block';
+      [0,1,2,3,4,5].forEach(i => {
+        const d = document.getElementById('d'+i);
+        d.value = ''; d.classList.remove('filled');
+        d.style.borderColor = 'var(--red)';
+        setTimeout(() => d.style.borderColor = '', 1200);
+      });
+      document.getElementById('d0').focus();
+      btn.disabled = false;
+      btn.innerHTML = 'Verify Code →';
+    } else {
+      // Success — mark listing claimed
+      document.getElementById('previewTier').style.display = 'none';
+      document.getElementById('previewClaimed').style.display = 'inline-block';
+      document.getElementById('successBizName').textContent =
+        `You're now the verified owner of ${listing.name}. Your basic info is live — let's make it work harder for you.`;
+      goStep(3);
+    }
+  }, 1400);
+}
+
+// ── COUNTDOWN TIMER
+function startCountdown() {
+  let secs = 30;
+  document.getElementById('resendLink').style.display = 'none';
+  document.getElementById('countdown').style.display = '';
+  clearInterval(countdownTimer);
+  countdownTimer = setInterval(() => {
+    secs--;
+    document.getElementById('countdownNum').textContent = secs;
+    if (secs <= 0) {
+      clearInterval(countdownTimer);
+      document.getElementById('resendLink').style.display = '';
+      document.getElementById('countdown').style.display = 'none';
+    }
+  }, 1000);
+}
+
+function resendCode() {
+  document.getElementById('resendLink').style.display = 'none';
+  document.getElementById('countdown').style.display = '';
+  document.getElementById('countdownNum').textContent = 30;
+  // Simulate resend
+  setTimeout(() => {
+    startCountdown();
+    // Flash "Sent!" feedback
+    const link = document.getElementById('resendLink');
+    link.textContent = '✓ Sent!';
+    link.style.color = 'var(--green)';
+    setTimeout(() => {
+      link.textContent = 'Resend code';
+      link.style.color = '';
+    }, 2000);
+  }, 800);
+}
+
+// ── STEP NAVIGATION
+function goStep(n) {
+  document.querySelectorAll('.pnl').forEach(p => p.classList.remove('active'));
+  document.getElementById('pnl-' + ['verify','code','success'][n-1]).classList.add('active');
+
+  // Update progress
+  for (let i = 1; i <= 3; i++) {
+    const s = document.getElementById('step'+i);
+    s.classList.remove('active','done');
+    if (i < n) s.classList.add('done');
+    else if (i === n) s.classList.add('active');
+    if (i < 3) {
+      const l = document.getElementById('line'+i);
+      l.classList.toggle('done', i < n);
+    }
+  }
+  // Update step dot for done steps
+  for (let i = 1; i < n; i++) {
+    document.getElementById('step'+i).querySelector('.step-dot').textContent = '✓';
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function goBack() {
+  clearInterval(countdownTimer);
+  [0,1,2,3,4,5].forEach(i => {
+    const d = document.getElementById('d'+i);
+    d.value = ''; d.classList.remove('filled'); d.style.borderColor = '';
+  });
+  goStep(1);
+}
+
+// ── POST-CLAIM ACTIONS
+function goToDashboard() {
+  // In production: redirect to /admin/?owner=true&token=xxx
+  window.location.href = '../admin/?claimed=' + encodeURIComponent(listing.name);
+}
+
+function goUpgrade(tier) {
+  // In production: redirect to Stripe checkout with tier + listing ID
+  const prices = { basic: '29', featured: '79', county: '299' };
+  const names = { basic: 'Basic', featured: 'Featured', county: 'County Sponsor' };
+  // Stripe Payment Link would go here:
+  // window.location.href = STRIPE_LINKS[tier] + '?client_reference_id=' + listingSlug;
+  alert(`Redirecting to Stripe checkout for ${names[tier]} — $${prices[tier]}/mo\n\n(Wire up your Stripe Payment Link here)`);
+}
+</script>
+</body>
+</html>
