@@ -3,8 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VoltMap — eBike Shop Directory</title>
-<meta name="description" content="Find eBike shops, dealers, and service centers across all 50 states. City-by-city directory with ratings, hours, and contact info.">
+<title>VoltMap — eBike Shop Directory | Find Electric Bike Shops Near You</title>
+<meta name="description" content="Find eBike shops, dealers, and repair centers near you. Browse 707+ California listings by city and county — with ratings, hours, and contact info.">
+<meta name="keywords" content="ebike shop near me, electric bicycle dealer, ebike repair, electric bike store California, ebike shop directory">
+<meta property="og:title" content="VoltMap — eBike Shop Directory">
+<meta property="og:description" content="Find electric bike shops, dealers, and service centers near you. City-by-city directory with real ratings and hours.">
+<meta property="og:type" content="website">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://voltmap.com/">
+<!-- WebSite schema for Google Sitelinks Searchbox -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "VoltMap",
+  "url": "https://voltmap.com",
+  "description": "Electric bike shop directory — find eBike dealers, repair shops, and rentals across all 50 states",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://voltmap.com/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+<!-- Organization schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "VoltMap",
+  "url": "https://voltmap.com",
+  "logo": "https://voltmap.com/public/logo.png",
+  "description": "eBike shop directory covering all 50 states",
+  "sameAs": []
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
@@ -50,10 +83,22 @@
   .btn-volt { background:var(--volt); color:var(--carbon); font-weight:700; }
   .btn-volt:hover { background:#caff14; transform:translateY(-1px); box-shadow:0 4px 20px rgba(184,244,0,0.3); }
 
-  /* AD BAR */
+  /* AD BAR / FEATURED SHOP BAR */
   .ad-bar { background:var(--carbon-light); border-bottom:1px solid var(--carbon-border); padding:7px 20px; text-align:center; position:relative; z-index:1; }
   .ad-ph { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,#1a1a1f,#111114); border:1px dashed #252530; border-radius:5px; padding:7px 28px; color:var(--steel); font-size:11px; font-family:'Rajdhani',sans-serif; letter-spacing:0.1em; text-transform:uppercase; }
   .ad-lbl { background:var(--carbon-border); color:var(--steel); font-size:10px; padding:1px 5px; border-radius:2px; }
+
+  /* FEATURED SHOP SLOT — replaces 728x90 when a featured listing exists */
+  .featured-shop-bar { display:inline-flex; align-items:center; gap:14px; background:linear-gradient(135deg,rgba(184,244,0,0.07),rgba(26,26,31,0.9)); border:1px solid rgba(184,244,0,0.2); border-radius:8px; padding:8px 18px 8px 12px; text-decoration:none; transition:all 0.18s; max-width:860px; width:100%; }
+  .featured-shop-bar:hover { border-color:rgba(184,244,0,0.45); background:linear-gradient(135deg,rgba(184,244,0,0.11),rgba(26,26,31,1)); }
+  .fsb-badge { font-family:'Rajdhani',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; background:var(--volt); color:var(--carbon); padding:2px 8px; border-radius:3px; flex-shrink:0; white-space:nowrap; }
+  .fsb-logo { width:34px; height:34px; border-radius:6px; object-fit:cover; background:var(--carbon-border); flex-shrink:0; }
+  .fsb-logo-ph { width:34px; height:34px; border-radius:6px; background:var(--carbon-border); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .fsb-name { font-family:'Rajdhani',sans-serif; font-size:15px; font-weight:700; color:var(--white); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .fsb-meta { font-size:12px; color:var(--steel); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .fsb-rating { color:var(--amber); font-size:12px; margin-left:6px; }
+  .fsb-cta { margin-left:auto; background:var(--volt); color:var(--carbon); font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:700; padding:5px 14px; border-radius:5px; letter-spacing:0.06em; flex-shrink:0; white-space:nowrap; }
+  .fsb-divider { width:1px; height:28px; background:var(--carbon-border); flex-shrink:0; }
 
   /* LAYOUT */
   .layout { max-width:1440px; margin:0 auto; display:grid; grid-template-columns:252px 1fr 284px; position:relative; z-index:1; min-height:calc(100vh - 90px); }
@@ -194,8 +239,12 @@
   </div>
 </header>
 
-<div class="ad-bar">
-  <div class="ad-ph"><span class="ad-lbl">AD</span>Google Ads — 728×90 — ebike · electric bicycle · dealers near me</div>
+<!-- FEATURED SHOP BAR — high-intent placement above fold -->
+<div class="ad-bar" id="featuredBar">
+  <div class="featured-shop-slot" id="featuredShopSlot">
+    <!-- Populated by JS from featured/county-sponsor listings -->
+    <div class="ad-ph"><span class="ad-lbl">AD</span>Google Ads — 728×90 — ebike · electric bicycle · dealers near me</div>
+  </div>
 </div>
 
 <div class="layout">
@@ -272,7 +321,10 @@
 
   <!-- RIGHT SIDEBAR -->
   <aside class="sb-right">
-    <div class="ad-unit tall"><div class="au-lbl">Google Ads</div><div class="au-sz">300 × 250</div></div>
+    <!-- RIGHT SIDEBAR TOP: Featured Shop slot (filled by JS) or AdSense fallback -->
+    <div id="sbFeaturedSlot">
+      <div class="ad-unit tall"><div class="au-lbl">Google Ads</div><div class="au-sz">300 × 250</div></div>
+    </div>
     <div class="sp-box">
       <div class="sp-title">⚡ Featured Sponsor</div>
       <a href="https://fatbirdies.com" target="_blank" rel="noopener" style="display:block; background:var(--carbon); border:1px solid rgba(184,244,0,0.1); border-radius:8px; padding:14px; text-align:center; text-decoration:none; transition:all 0.18s;" onmouseover="this.style.borderColor='rgba(184,244,0,0.35)';this.style.background='#111114'" onmouseout="this.style.borderColor='rgba(184,244,0,0.1)';this.style.background='var(--carbon)'">
@@ -351,6 +403,14 @@ async function loadData() {
     buildCityChipsLeft();
     buildCountyChips();
     applyAndRender();
+    // Schema + featured bar on first load
+    setTimeout(() => {
+      const flat = Object.values(DATA.cities).flatMap(c =>
+        c.listings.map(l => ({...l, _cs: c.name_slug || '', _cn: c.name || ''}))
+      );
+      injectSchema(flat);
+      renderFeaturedBar(flat);
+    }, 100);
   } catch(e) {
     document.getElementById('feed').innerHTML = `<div class="empty">⚠️ Could not load listings.<br><small style="color:var(--steel)">${e.message}</small></div>`;
   }
@@ -594,6 +654,182 @@ function renderFeed(list) {
 
   feed.innerHTML = html;
 }
+
+// ── LOCALBUSINESS SCHEMA — inject per visible listing set
+function injectSchema(listings) {
+  // Remove old schema tags
+  document.querySelectorAll('script[data-vm-schema]').forEach(s => s.remove());
+
+  // Build ItemList schema wrapping all visible listings
+  const itemList = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "eBike Shops in California",
+    "description": "Directory of electric bicycle shops, dealers, and repair services in California",
+    "numberOfItems": listings.length,
+    "itemListElement": listings.slice(0, 50).map((l, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "item": buildLocalBusinessSchema(l)
+    }))
+  };
+  appendSchema(itemList, 'itemlist');
+
+  // Also inject individual LocalBusiness schemas for top 10 (for rich results)
+  listings.slice(0, 10).forEach((l, i) => {
+    appendSchema(buildLocalBusinessSchema(l), `lb-${i}`);
+  });
+}
+
+function buildLocalBusinessSchema(l) {
+  const cats = (l.category || []).filter(Boolean);
+  const primaryCat = cats[0] || 'Bicycle Shop';
+  // Map category → schema @type
+  const typeMap = {
+    'electric bicycle store': 'BicycleStore',
+    'bicycle shop': 'BicycleStore',
+    'bicycle repair shop': 'AutoRepair',
+    'bicycle rental service': 'LocalBusiness',
+    'used bicycle shop': 'BicycleStore'
+  };
+  const schemaType = typeMap[primaryCat.toLowerCase()] || 'LocalBusiness';
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": schemaType,
+    "name": l.name,
+    "description": l.description || `${l.name} — ${primaryCat} in ${l.city}, California. Serving ${l.county ? l.county + ' County' : 'the local area'}.`,
+    "url": l.website || `https://voltmap.com/california/${l.county_slug || 'ca'}/${l._cs}/${l.id}/`,
+    "telephone": l.phone || undefined,
+    "image": l.image_url || undefined,
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": l.address || undefined,
+      "addressLocality": l.city,
+      "addressRegion": "CA",
+      "postalCode": l.zip || undefined,
+      "addressCountry": "US"
+    },
+    "geo": (l.lat && l.lng) ? {
+      "@type": "GeoCoordinates",
+      "latitude": l.lat,
+      "longitude": l.lng
+    } : undefined,
+    "aggregateRating": (l.rating && l.review_count) ? {
+      "@type": "AggregateRating",
+      "ratingValue": l.rating.toFixed(1),
+      "reviewCount": l.review_count,
+      "bestRating": "5",
+      "worstRating": "1"
+    } : undefined,
+    "openingHoursSpecification": buildHoursSchema(l.hours),
+    "servesCuisine": undefined, // not applicable
+    "priceRange": undefined,
+    "sameAs": [l.google_maps_url].filter(Boolean),
+    "keywords": [
+      `${l.city} ebike shop`, `${l.city} electric bicycle`,
+      `${l.county ? l.county + ' county ebike' : ''}`,
+      `ebike repair ${l.city}`, `electric bike dealer ${l.city} California`,
+      ...cats
+    ].filter(Boolean).join(', ')
+  };
+
+  // Clean undefined values
+  return JSON.parse(JSON.stringify(schema));
+}
+
+function buildHoursSchema(hours) {
+  if (!hours || !Object.keys(hours).length) return undefined;
+  const dayMap = { mon:'Monday', tue:'Tuesday', wed:'Wednesday', thu:'Thursday', fri:'Friday', sat:'Saturday', sun:'Sunday' };
+  const specs = [];
+  for (const [d, ts] of Object.entries(hours)) {
+    if (!ts || !dayMap[d]) continue;
+    const [o, c] = ts.split('-');
+    if (!o || !c) continue;
+    specs.push({
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": `https://schema.org/${dayMap[d]}`,
+      "opens": o,
+      "closes": c
+    });
+  }
+  return specs.length ? specs : undefined;
+}
+
+function appendSchema(obj, key) {
+  const s = document.createElement('script');
+  s.type = 'application/ld+json';
+  s.setAttribute('data-vm-schema', key);
+  s.textContent = JSON.stringify(obj, null, 0);
+  document.head.appendChild(s);
+}
+
+// ── FEATURED SHOP BAR — replaces 728×90 with a real listing when one qualifies
+function renderFeaturedBar(listings) {
+  // Priority: county sponsor > featured tier > highest rated claimed listing
+  const candidate = listings.find(l => l.tier === 'county') ||
+                    listings.find(l => l.tier === 'featured') ||
+                    listings.filter(l => l.claimed).sort((a,b) => (b.rating||0) - (a.rating||0))[0];
+
+  const slot = document.getElementById('featuredShopSlot');
+  const sbSlot = document.getElementById('sbFeaturedSlot');
+
+  if (!candidate) return; // Fall through to AdSense placeholder
+
+  const city = candidate.city || '';
+  const county = candidate.county ? ` · ${candidate.county} Co.` : '';
+  const rating = candidate.rating ? `⭐ ${candidate.rating.toFixed(1)} (${(candidate.review_count||0).toLocaleString()})` : '';
+  const cats = (candidate.category || []).filter(Boolean).slice(0,2).join(' · ');
+  const claimUrl = candidate.website || `claim/?slug=${encodeURIComponent(candidate.id || '')}`;
+  const tierLabel = candidate.tier === 'county' ? '🏆 COUNTY SPONSOR' :
+                    candidate.tier === 'featured' ? '⭐ FEATURED SHOP' : '✓ CLAIMED';
+
+  // Top bar — replaces 728×90
+  slot.innerHTML = `
+    <a href="${esc(claimUrl)}" class="featured-shop-bar" target="${candidate.website ? '_blank' : '_self'}" rel="noopener" title="Featured listing: ${esc(candidate.name)}">
+      <span class="fsb-badge">${tierLabel}</span>
+      <div class="fsb-logo-ph">🚲</div>
+      <div class="fsb-divider"></div>
+      <div style="flex:1;min-width:0;text-align:left;">
+        <div class="fsb-name">${esc(candidate.name)}</div>
+        <div class="fsb-meta">${esc(cats)}${cats?' · ':''}${esc(city)}, CA${county}<span class="fsb-rating">${rating}</span></div>
+      </div>
+      <div class="fsb-cta">${candidate.website ? 'Visit Website →' : 'View Listing →'}</div>
+    </a>`;
+
+  // Right sidebar featured card (replaces 300×250 placeholder)
+  sbSlot.innerHTML = `
+    <div style="background:linear-gradient(135deg,rgba(184,244,0,0.07),var(--carbon-light));border:1px solid rgba(184,244,0,0.2);border-radius:9px;padding:14px;margin-bottom:0;">
+      <div style="font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--volt);margin-bottom:10px;">${tierLabel}</div>
+      <div style="background:var(--carbon);border:1px solid var(--carbon-border);border-radius:7px;padding:16px;text-align:center;margin-bottom:10px;">
+        <div style="font-size:32px;margin-bottom:8px;">🚲</div>
+        <div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:var(--white);margin-bottom:3px;">${esc(candidate.name)}</div>
+        <div style="font-size:11px;color:var(--steel);margin-bottom:6px;">${esc(city)}, CA${county}</div>
+        ${rating ? `<div style="color:var(--amber);font-size:12px;margin-bottom:8px;">${rating}</div>` : ''}
+        ${candidate.phone ? `<div style="font-size:12px;color:var(--steel-light);margin-bottom:10px;">📞 ${esc(candidate.phone)}</div>` : ''}
+        <a href="${esc(claimUrl)}" target="${candidate.website ? '_blank' : '_self'}" rel="noopener"
+          style="display:block;background:var(--volt);color:var(--carbon);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;padding:7px 0;border-radius:5px;text-decoration:none;letter-spacing:0.06em;">
+          ${candidate.website ? 'VISIT WEBSITE →' : 'VIEW LISTING →'}
+        </a>
+      </div>
+      <a href="claim/" style="display:block;text-align:center;font-size:11px;color:var(--steel);text-decoration:none;">Advertise your shop here →</a>
+    </div>`;
+}
+
+// ── WRAP applyAndRender to also update schema + featured bar
+const _origApply = applyAndRender;
+applyAndRender = function() {
+  _origApply();
+  // Run schema + featured bar after render on next tick
+  setTimeout(() => {
+    const allListings = Object.values(DATA.cities).flatMap(c => c.listings).map(l => ({
+      ...l, _cs: Object.keys(DATA.cities).find(k => DATA.cities[k].listings.includes(l)) || '',
+      _cn: ''
+    }));
+    injectSchema(allListings.slice(0, 50));
+    renderFeaturedBar(allListings);
+  }, 0);
+};
 
 loadData();
 </script>
