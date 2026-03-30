@@ -530,13 +530,17 @@ function goToDashboard() {
   window.location.href = '../admin/?claimed=' + encodeURIComponent(listing.name);
 }
 
+const STRIPE_LINKS = {
+  basic:    'https://buy.stripe.com/8x24gyeGUaija1m3sYdjO03',
+  featured: 'https://buy.stripe.com/28E7sK7es7673CYaVqdjO04',
+  county:   'https://buy.stripe.com/cNi5kC6aoaija1m3sYdjO05'
+};
+
 function goUpgrade(tier) {
-  // In production: redirect to Stripe checkout with tier + listing ID
-  const prices = { basic: '29', featured: '79', county: '299' };
-  const names = { basic: 'Basic', featured: 'Featured', county: 'County Sponsor' };
-  // Stripe Payment Link would go here:
-  // window.location.href = STRIPE_LINKS[tier] + '?client_reference_id=' + listingSlug;
-  alert(`Redirecting to Stripe checkout for ${names[tier]} — $${prices[tier]}/mo\n\n(Wire up your Stripe Payment Link here)`);
+  const base = STRIPE_LINKS[tier];
+  if (!base) return;
+  const ref = encodeURIComponent(listingSlug || 'unknown');
+  window.location.href = `${base}?client_reference_id=${ref}`;
 }
 </script>
 </body>

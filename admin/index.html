@@ -812,7 +812,7 @@ body{background:var(--carbon);color:var(--white);font-family:'DM Sans',sans-seri
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('upgradeModal')">Cancel</button>
-      <button class="btn btn-volt" onclick="closeModal('upgradeModal')">Apply Tier & Save →</button>
+      <button class="btn btn-volt" onclick="applyTierUpgrade()">Apply Tier & Save →</button>
     </div>
   </div>
 </div>
@@ -891,10 +891,10 @@ body{background:var(--carbon);color:var(--white);font-family:'DM Sans',sans-seri
       <div style="background:var(--carbon);border:1px solid var(--carbon-border);border-radius:8px;padding:14px;text-align:left;font-size:12px;color:var(--steel-light);line-height:1.8;">
         <strong style="color:var(--white);display:block;margin-bottom:6px;">Email sent includes:</strong>
         ✓ Claim confirmed · listing is now yours to edit<br>
-        ✓ Basic tier — $29/mo — logo + city text ad<br>
-        ✓ Featured tier — $79/mo — sidebar + pinned<br>
-        ✓ County Sponsor — $299/mo — county-wide logo<br>
-        ✓ Direct Stripe checkout link
+        ✓ <a href="https://buy.stripe.com/8x24gyeGUaija1m3sYdjO03" target="_blank" style="color:var(--blue)">Basic — $29/mo</a> · logo + city text ad<br>
+        ✓ <a href="https://buy.stripe.com/28E7sK7es7673CYaVqdjO04" target="_blank" style="color:var(--volt)">Featured — $79/mo</a> · sidebar + pinned top<br>
+        ✓ <a href="https://buy.stripe.com/cNi5kC6aoaija1m3sYdjO05" target="_blank" style="color:var(--amber)">County Sponsor — $299/mo</a> · county-wide logo<br>
+        ✓ Links go directly to Stripe checkout
       </div>
     </div>
     <div class="modal-footer">
@@ -1002,6 +1002,35 @@ function selectScope(el, scope, price) {
 
 // ── CLAIM REVIEW
 function openClaimReview(key) { openModal('claimModal'); }
+
+// ── STRIPE PAYMENT LINKS
+const STRIPE_LINKS = {
+  basic:    'https://buy.stripe.com/8x24gyeGUaija1m3sYdjO03',
+  featured: 'https://buy.stripe.com/28E7sK7es7673CYaVqdjO04',
+  county:   'https://buy.stripe.com/cNi5kC6aoaija1m3sYdjO05'
+};
+
+function applyTierUpgrade() {
+  // Find which tier card is selected
+  const selected = document.querySelector('#upgradeTierGrid .tier-card.selected');
+  if (!selected) { closeModal('upgradeModal'); return; }
+
+  const tierMap = { 0:'free', 1:'basic', 2:'featured', 3:'county' };
+  const cards = document.querySelectorAll('#upgradeTierGrid .tier-card');
+  let selectedTier = 'free';
+  cards.forEach((c, i) => { if (c.classList.contains('selected')) selectedTier = tierMap[i]; });
+
+  if (selectedTier === 'free') {
+    // Downgrade — just close, handle in real backend
+    closeModal('upgradeModal');
+    return;
+  }
+
+  // Open Stripe checkout in new tab so admin doesn't lose their session
+  const link = STRIPE_LINKS[selectedTier];
+  if (link) window.open(link, '_blank');
+  closeModal('upgradeModal');
+}
 
 function approveClaim() {
   closeModal('claimModal');
